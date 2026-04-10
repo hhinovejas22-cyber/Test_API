@@ -1,0 +1,31 @@
+name: Daily Tech Briefing
+
+on:
+  schedule:
+    # This uses UTC time. 00:00 UTC translates exactly to 8:00 AM your local time.
+    - cron: '0 0 * * *'
+  # This line allows you to manually click a "Run" button on GitHub for testing
+  workflow_dispatch: 
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 1. Grab the code
+      uses: actions/checkout@v4
+
+    - name: 2. Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: 3. Install required libraries
+      run: pip install -r requirements.txt
+
+    - name: 4. Run the Pipeline
+      env:
+        # This injects your secure GitHub Secrets into the runner's environment
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      run: python scraper_test.py
